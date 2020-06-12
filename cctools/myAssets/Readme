@@ -1,0 +1,7 @@
+Put your custom maps, model and texture packs here.
+Make sure the files are pk3-files and NOT ZIP-files that contain pk3-files!!!!
+
+Use the provided pk3s to override files in the original pak0 (by merging them with pak100 or pak101 NOT pak0).
+- defaultCFG.pk3 (You can now define default keyboard-settings that are loaded when a player joins your server)
+- WearoffEx.pk3 (Contains an empty wav file that replaces the Q3A powerup wearoff sound with silence since this sound seems buggy and annoys some players)
+- ArenaAndBotsFiles.pk3 (Contains the original bots.txt and PK100 arenas.txt - you can make custom changes..)
