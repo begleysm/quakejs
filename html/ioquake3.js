@@ -36,6 +36,8 @@ var ENVIRONMENT_IS_NODE = typeof process === 'object' && typeof require === 'fun
 var ENVIRONMENT_IS_WEB = typeof window === 'object';
 var ENVIRONMENT_IS_WORKER = typeof importScripts === 'function';
 var ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
+var HTTP_PROTOCOL = window.location.protocol + '//'
+var CHANNEL_SECURE = HTTP_PROTOCOL === 'https://'
 
 if (ENVIRONMENT_IS_NODE) {
   // Expose functionality in the same simple way that the shells work
@@ -15204,7 +15206,12 @@ function copyTempDouble(ptr) {
   			Runtime.stackRestore(stack);
   			return CRC32.Finish(crc);
   		},GetCDN:function () {
-  			return Pointer_stringify(_Com_GetCDN());
+  			let insteadOf = Pointer_stringify(_Com_GetCDN());
+        let pathname = window.location.pathname.split('/');
+        pathname = [pathname[1], pathname[2]].join('/');
+        var fs_cdn = window.location.host + '/' + pathname;
+        console.log('cdn is ', fs_cdn, 'instead of', insteadOf)
+        return fs_cdn
   		},GetManifest:function () {
   			var manifest = Pointer_stringify(_Com_GetManifest());
   
@@ -15224,7 +15231,7 @@ function copyTempDouble(ptr) {
   		},DownloadAsset:function (asset, onprogress, onload) {
   			var root = SYSC.GetCDN();
   			var name = asset.name.replace(/(.+\/|)(.+?)$/, '$1' + asset.checksum + '-$2');
-  			var url = 'http://' + root + '/assets/' + name;
+  			var url = HTTP_PROTOCOL + root + '/assets/' + name;
   
   			SYS.DoXHR(url, {
   				dataType: 'arraybuffer',
@@ -15270,11 +15277,14 @@ function copyTempDouble(ptr) {
   
   			nextDownload();
   		},UpdateManifest:function (callback) {
-  			var fs_cdn = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('fs_cdn'), 'i8', ALLOC_STACK)));
+  			// var fs_cdn = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('fs_cdn'), 'i8', ALLOC_STACK)));
+        let pathname = window.location.pathname.split('/');
+        pathname = [pathname[1], pathname[2]].join('/');
+        var fs_cdn = window.location.host + '/' + pathname;
   			var fs_game = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('fs_game'), 'i8', ALLOC_STACK)));
   			var com_basegame = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('com_basegame'), 'i8', ALLOC_STACK)));
   			var mapname = Pointer_stringify(_Cvar_VariableString(allocate(intArrayFromString('mapname'), 'i8', ALLOC_STACK)));
-  			var url = 'http://' + fs_cdn + '/assets/manifest.json';
+  			var url = HTTP_PROTOCOL + fs_cdn + '/assets/manifest.json';
   
   			function isInstaller(name) {
   				return SYSC.installers.some(function (installer) {
